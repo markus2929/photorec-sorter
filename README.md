@@ -14,9 +14,12 @@ We define an "event" as a time span during them photos are taken. It has a delta
 
 ## Installation
 
-First install the package [exifread](https://pypi.python.org/pypi/ExifRead):
+Install the required packages:
 
-`pip install exifread`
+```bash
+pip install -r requirements.txt
+```
+
 
 ## Run the sorter
 
