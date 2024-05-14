@@ -70,8 +70,8 @@ def createUnknownDateFolder(destinationRoot):
     path = os.path.join(destinationRoot, unknownDateFolderName)
     createPath(path)
 
-def writeImages(images, destinationRoot, minEventDeltaDays, splitByMonth=False):
-    minEventDelta = minEventDeltaDays * 60 * 60 * 24 # convert in seconds
+def writeImages(images, destinationRoot, min_event_delta_days, splitByMonth=False):
+    minEventDelta = min_event_delta_days * 60 * 60 * 24 # convert in seconds
     sortedImages = sorted(images)
     previousTime = None
     eventNumber = 0
@@ -119,10 +119,10 @@ def writeImages(images, destinationRoot, minEventDeltaDays, splitByMonth=False):
                 os.remove(imageTuple[1])
 
 
-def postprocessImages(imageDirectory, minEventDeltaDays, splitByMonth):
+def postprocessImages(imageDirectory, min_event_delta_days, splitByMonth):
     images = []
     for root, dirs, files in os.walk(imageDirectory):
         for file in files:
             postprocessImage(images, imageDirectory, file)
 
-    writeImages(images, imageDirectory, minEventDeltaDays, splitByMonth)
+    writeImages(images, imageDirectory, min_event_delta_days, splitByMonth)
