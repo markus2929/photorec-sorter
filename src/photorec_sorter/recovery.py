@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import os
 import shutil
 from time import strftime, strptime
@@ -9,8 +7,8 @@ import exifread
 from loguru import logger
 
 # project libraries
-import jpgSorter
-import numberOfFilesPerFolderLimiter
+from photorec_sorter import jpg_sorter
+from photorec_sorter import files_per_folder_limiter
 
 def getNumberOfFilesInFolderRecursively(start_path = '.'):
     numberOfFiles = 0
@@ -26,7 +24,7 @@ def getNumberOfFilesInFolder(path):
     return len(os.listdir(path))
 
 
-def do_organization(
+def sort_photorec_folder(
         source: str, destination: str,
         max_files_per_folder: int,
         enable_split_months: bool, enable_keep_filename: bool, enable_datetime_filename: bool,
@@ -77,7 +75,7 @@ def do_organization(
                 image = open(source_file_path, 'rb')
                 exifTags = exifread.process_file(image, details=False)
                 image.close()
-                creationTime = jpgSorter.getMinimumCreationTime(exifTags)
+                creationTime = jpg_sorter.getMinimumCreationTime(exifTags)
                 try:
                     creationTime = strptime(str(creationTime), "%Y:%m:%d %H:%M:%S")
                     creationTime = strftime("%Y%m%d_%H%M%S", creationTime)
@@ -103,50 +101,9 @@ def do_organization(
                 logger.info(f"{cur_file_number} / {total_file_count} processed ({cur_file_number/total_file_count:.2%}).")
 
     logger.info("Starting special file treatment (JPG sorting and folder splitting)...")
-    jpgSorter.postprocessImages(os.path.join(destination, "JPG"), min_event_delta_days, enable_split_months)
+    jpg_sorter.postprocessImages(os.path.join(destination, "JPG"), min_event_delta_days, enable_split_months)
 
     logger.info("Applying max files-per-folder limit...")
-    numberOfFilesPerFolderLimiter.limitFilesPerFolder(destination, max_files_per_folder)
+    files_per_folder_limiter.limitFilesPerFolder(destination, max_files_per_folder)
 
     logger.info("Done.")
-
-
-
-def get_args():
-    import argparse
-
-    description = (
-        "Sort files recovered by PhotoRec.\n"
-        "The input files are first copied to the destination, sorted by file type.\n"
-        "Then JPG files are sorted based on creation year (and optionally month).\n"
-        "Finally any directories containing more than a maximum number of files are accordingly split into separate directories."
-    )
-
-    parser = argparse.ArgumentParser(description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('source', metavar='src', type=str, help='source directory with files recovered by PhotoRec')
-    parser.add_argument('destination', metavar='dest', type=str, help='destination directory to write sorted files to')
-    parser.add_argument('-n', '--max-per-dir', type=int, default=500, required=False, help='maximum number of files per directory')
-    parser.add_argument('-m', '--split-months', action='store_true', required=False, help='split JPEG files not only by year but by month as well')
-    parser.add_argument('-k', '--keep_filename', action='store_true', required=False, help='keeps the original filenames when copying')
-    parser.add_argument('-d', '--min-event-delta', type=int, default=4, required=False, help='minimum delta in days between two days')
-    parser.add_argument('-j', '--enable_datetime_filename', action='store_true', required=False, help='sets the filename to the exif date and time if possible - otherwise keep the original filename')    
-
-    return parser.parse_args()
-
-def main():
-    args = get_args()
-    source = args.source
-    destination = args.destination
-    max_files_per_folder = args.max_per_dir
-    enable_split_months = args.split_months
-    enable_keep_filename = args.keep_filename
-    enable_datetime_filename = args.enable_datetime_filename
-    min_event_delta_days = args.min_event_delta
-
-    logger.info(f"Arguments: {args}")
-
-    do_organization(source, destination, max_files_per_folder, enable_split_months, enable_keep_filename, enable_datetime_filename, min_event_delta_days)
-
-
-if __name__ == '__main__':
-    main()

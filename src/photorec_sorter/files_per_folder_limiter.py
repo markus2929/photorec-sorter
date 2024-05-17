@@ -1,5 +1,3 @@
-import sys
-import math
 import os
 import shutil
 
@@ -23,5 +21,3 @@ def limitFilesPerFolder(folder, max_files_per_folder):
                         destination = os.path.join(dirPath, destDir, file)
                         shutil.move(source, destination)
                         fileCounter += 1
-
-
