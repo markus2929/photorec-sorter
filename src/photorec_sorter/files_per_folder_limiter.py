@@ -7,9 +7,9 @@ def limitFilesPerFolder(folder, max_files_per_folder):
         for dir in dirs:
             dirPath = os.path.join(root, dir)
             filesInFolder = len(os.listdir(dirPath))
-            if(filesInFolder > max_files_per_folder):
+            if filesInFolder > max_files_per_folder:
                 numberOfSubfolders = ((filesInFolder - 1) // max_files_per_folder) + 1
-                for subFolderNumber in range(1, numberOfSubfolders+1):
+                for subFolderNumber in range(1, numberOfSubfolders + 1):
                     subFolderPath = os.path.join(dirPath, str(subFolderNumber))
                     if not os.path.exists(subFolderPath):
                         os.mkdir(subFolderPath)

@@ -1,0 +1,5 @@
+# Custom Dictionary Words
+exif
+exifread
+loguru
+photorec

@@ -10,12 +10,13 @@ from loguru import logger
 from photorec_sorter import jpg_sorter
 from photorec_sorter import files_per_folder_limiter
 
-def getNumberOfFilesInFolderRecursively(start_path = '.'):
+
+def getNumberOfFilesInFolderRecursively(start_path="."):
     numberOfFiles = 0
     for dirpath, dirnames, filenames in os.walk(start_path):
         for f in filenames:
             fp = os.path.join(dirpath, f)
-            if(os.path.isfile(fp)):
+            if os.path.isfile(fp):
                 numberOfFiles += 1
     return numberOfFiles
 
@@ -25,29 +26,41 @@ def getNumberOfFilesInFolder(path):
 
 
 def sort_photorec_folder(
-        source: str, destination: str,
-        max_files_per_folder: int,
-        enable_split_months: bool, enable_keep_filename: bool, enable_datetime_filename: bool,
-        min_event_delta_days: int
-    ):
+    source: str,
+    destination: str,
+    max_files_per_folder: int,
+    enable_split_months: bool,
+    enable_keep_filename: bool,
+    enable_datetime_filename: bool,
+    min_event_delta_days: int,
+):
 
     if not os.path.isdir(source):
         raise ValueError("Source directory does not exist: " + source)
     if not os.path.isdir(destination):
         raise ValueError("Destination directory does not exist: " + destination)
 
-    logger.info("Reading from source '%s', writing to destination '%s' (max %i files per directory, splitting by year %s)." %
-        (source, destination, max_files_per_folder, enable_split_months and "and month" or "only"))
+    logger.info(
+        "Reading from source '%s', writing to destination '%s' (max %i files per directory, splitting by year %s)."
+        % (
+            source,
+            destination,
+            max_files_per_folder,
+            enable_split_months and "and month" or "only",
+        )
+    )
     if enable_keep_filename:
         logger.info("Filename Plan: Keep the original filenames.")
     elif enable_datetime_filename:
-        logger.info("Filename Plan: If possible, rename files like <Date>_<Time>.jpg. Otherwise, keep the original filenames.")
+        logger.info(
+            "Filename Plan: If possible, rename files like <Date>_<Time>.jpg. Otherwise, keep the original filenames."
+        )
     else:
         logger.info("Filename Plan: Rename files sequentially, like '1.jpg'")
 
     total_file_count = getNumberOfFilesInFolderRecursively(source)
     if total_file_count > 100:
-        log_frequency_file_count = int(total_file_count/100)
+        log_frequency_file_count = int(total_file_count / 100)
     else:
         log_frequency_file_count = total_file_count
     logger.info(f"Total files to copy: {total_file_count:,}")
@@ -66,13 +79,13 @@ def sort_photorec_folder(
 
             if not os.path.exists(dest_directory):
                 os.mkdir(dest_directory)
-            
+
             if enable_keep_filename:
                 file_name = file
-            
+
             elif enable_datetime_filename:
                 index = 0
-                image = open(source_file_path, 'rb')
+                image = open(source_file_path, "rb")
                 exifTags = exifread.process_file(image, details=False)
                 image.close()
                 creationTime = jpg_sorter.getMinimumCreationTime(exifTags)
@@ -82,7 +95,14 @@ def sort_photorec_folder(
                     file_name = str(creationTime) + "." + extension.lower()
                     while os.path.exists(os.path.join(dest_directory, file_name)):
                         index += 1
-                        file_name = str(creationTime) + "(" + str(index) + ")" + "." + extension.lower()
+                        file_name = (
+                            str(creationTime)
+                            + "("
+                            + str(index)
+                            + ")"
+                            + "."
+                            + extension.lower()
+                        )
                 except:
                     file_name = file
 
@@ -97,11 +117,15 @@ def sort_photorec_folder(
                 shutil.copy2(source_file_path, dest_file_path)
 
             cur_file_number += 1
-            if((cur_file_number % log_frequency_file_count) == 0):
-                logger.info(f"{cur_file_number} / {total_file_count} processed ({cur_file_number/total_file_count:.2%}).")
+            if (cur_file_number % log_frequency_file_count) == 0:
+                logger.info(
+                    f"{cur_file_number} / {total_file_count} processed ({cur_file_number/total_file_count:.2%})."
+                )
 
     logger.info("Starting special file treatment (JPG sorting and folder splitting)...")
-    jpg_sorter.postprocessImages(os.path.join(destination, "JPG"), min_event_delta_days, enable_split_months)
+    jpg_sorter.postprocessImages(
+        os.path.join(destination, "JPG"), min_event_delta_days, enable_split_months
+    )
 
     logger.info("Applying max files-per-folder limit...")
     files_per_folder_limiter.limitFilesPerFolder(destination, max_files_per_folder)
