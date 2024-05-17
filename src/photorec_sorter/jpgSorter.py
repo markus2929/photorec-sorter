@@ -1,7 +1,8 @@
-import os.path
+import os
 import ntpath
 from time import localtime, strftime, strptime, mktime
 import shutil
+
 import exifread
 
 unknownDateFolderName = "date-unknown"
