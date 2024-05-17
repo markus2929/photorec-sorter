@@ -62,7 +62,8 @@ def createPath(newPath):
         os.makedirs(newPath)
 
 
-# Pass None for month to create 'year/eventNumber' directories instead of 'year/month/eventNumber'.
+# Pass None for month to create 'year/eventNumber' directories instead of
+# 'year/month/eventNumber'.
 def createNewFolder(destinationRoot, year, month, eventNumber):
     if month is not None:
         newPath = os.path.join(destinationRoot, year, month, str(eventNumber))
@@ -77,7 +78,9 @@ def createUnknownDateFolder(destinationRoot):
     createPath(path)
 
 
-def writeImages(images, destinationRoot, min_event_delta_days, splitByMonth=False):
+def writeImages(
+    images, destinationRoot, min_event_delta_days, splitByMonth=False
+):
     minEventDelta = min_event_delta_days * 60 * 60 * 24  # convert in seconds
     sortedImages = sorted(images)
     previousTime = None

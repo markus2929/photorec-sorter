@@ -9,15 +9,18 @@ from photorec_sorter.recovery import sort_photorec_folder
 
 def get_args():
 
-    description = (
-        "Sort files recovered by PhotoRec.\n"
-        "The input files are first copied to the destination, sorted by file type.\n"
-        "Then JPG files are sorted based on creation year (and optionally month).\n"
-        "Finally any directories containing more than a maximum number of files are accordingly split into separate directories."
-    )
+    description = """
+Sort files recovered by PhotoRec.
+
+The input files are first copied to the destination, sorted by file type.
+Then, JPG files are sorted based on creation year (and optionally month).
+Finally, any directories containing more than a maximum number of files are
+accordingly split into separate directories."
+    """.strip()
 
     parser = argparse.ArgumentParser(
-        description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        description=description,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
         "source",

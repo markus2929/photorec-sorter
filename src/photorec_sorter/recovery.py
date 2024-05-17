@@ -38,7 +38,9 @@ def sort_photorec_folder(
     if not os.path.isdir(source):
         raise ValueError("Source directory does not exist: " + source)
     if not os.path.isdir(destination):
-        raise ValueError("Destination directory does not exist: " + destination)
+        raise ValueError(
+            "Destination directory does not exist: " + destination
+        )
 
     logger.info(
         "Reading from source '%s', writing to destination '%s' (max %i files per directory, splitting by year %s)."
@@ -90,10 +92,14 @@ def sort_photorec_folder(
                 image.close()
                 creationTime = jpg_sorter.getMinimumCreationTime(exifTags)
                 try:
-                    creationTime = strptime(str(creationTime), "%Y:%m:%d %H:%M:%S")
+                    creationTime = strptime(
+                        str(creationTime), "%Y:%m:%d %H:%M:%S"
+                    )
                     creationTime = strftime("%Y%m%d_%H%M%S", creationTime)
                     file_name = str(creationTime) + "." + extension.lower()
-                    while os.path.exists(os.path.join(dest_directory, file_name)):
+                    while os.path.exists(
+                        os.path.join(dest_directory, file_name)
+                    ):
                         index += 1
                         file_name = (
                             str(creationTime)
@@ -122,12 +128,18 @@ def sort_photorec_folder(
                     f"{cur_file_number} / {total_file_count} processed ({cur_file_number/total_file_count:.2%})."
                 )
 
-    logger.info("Starting special file treatment (JPG sorting and folder splitting)...")
+    logger.info(
+        "Starting special file treatment (JPG sorting and folder splitting)..."
+    )
     jpg_sorter.postprocessImages(
-        os.path.join(destination, "JPG"), min_event_delta_days, enable_split_months
+        os.path.join(destination, "JPG"),
+        min_event_delta_days,
+        enable_split_months,
     )
 
     logger.info("Applying max files-per-folder limit...")
-    files_per_folder_limiter.limitFilesPerFolder(destination, max_files_per_folder)
+    files_per_folder_limiter.limitFilesPerFolder(
+        destination, max_files_per_folder
+    )
 
     logger.info("Done.")

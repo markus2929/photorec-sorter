@@ -5,27 +5,20 @@ build-backend = "hatchling.build"
 [project]
 name = "photorec-sorter"
 version = "0.1.0"
-authors = [
-    { name="RecRanger", email="RecRanger+package@proton.me" },
-]
+authors = [{ name = "RecRanger", email = "RecRanger+package@proton.me" }]
 description = "A tool to efficiently check if a Bitcoin Address has ever been used before"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: The Unlicense (Unlicense)",
     "Operating System :: OS Independent",
 ]
 
-dependencies = [
-    "loguru",
-    "exifread",
-]
+dependencies = ["loguru", "exifread"]
 
 [project.optional-dependencies]
-dev = [
-    "black",
-    "flake8",
-]
+dev = ["black", "flake8"]
 
 [project.urls]
 Homepage = "https://github.com/RecRanger/photo-rec"
