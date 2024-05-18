@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "photorec-sorter"
-version = "0.1.0"
+version = "0.1.1"
 authors = [{ name = "RecRanger", email = "RecRanger+package@proton.me" }]
 description = "A tool to sort/organize files recovered by the PhotoRec tool"
 readme = "README.md"
@@ -21,8 +21,8 @@ dependencies = ["loguru", "exifread"]
 dev = ["black", "flake8"]
 
 [project.urls]
-Homepage = "https://github.com/RecRanger/photo-rec"
-Issues = "https://github.com/RecRanger/photo-rec/issues"
+Homepage = "https://github.com/RecRanger/photorec-sorter"
+Issues = "https://github.com/RecRanger/photorec-sorter/issues"
 
 [project.scripts]
 photorec_sorter = "photorec_sorter.cli:main_cli"
