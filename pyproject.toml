@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "photorec-sorter"
 version = "0.1.0"
 authors = [{ name = "RecRanger", email = "RecRanger+package@proton.me" }]
-description = "A tool to efficiently check if a Bitcoin Address has ever been used before"
+description = "A tool to sort/organize files recovered by the PhotoRec tool"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
