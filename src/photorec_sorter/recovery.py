@@ -36,10 +36,11 @@ def sort_photorec_folder(
 ):
 
     if not os.path.isdir(source):
-        raise ValueError("Source directory does not exist: " + source)
+        raise ValueError(f"Source directory does not exist: {source}")
     if not os.path.isdir(destination):
         raise ValueError(
-            "Destination directory does not exist: " + destination
+            "Destination directory does not exist. "
+            f"Please create the directory first: {destination}"
         )
 
     logger.info(
