@@ -85,41 +85,34 @@ def sort_photorec_folder(
 
             if enable_keep_filename:
                 file_name = file
-
+                
             elif enable_datetime_filename:
                 index = 0
-                image = open(source_file_path, "rb")
-                exifTags = {}
+                file_name = file  # Fallback by default
                 try:
-                    exifTags = exifread.process_file(image, details=False)
-                except KeyError as e:
-                    logger.warning(f"Invalid EXIF data in {source_file_path}: {e}")
+                    with open(source_file_path, "rb") as image:
+                        try:
+                            exifTags = exifread.process_file(image, details=False)
+                        except (KeyError, Exception) as e:
+                            logger.warning(f"EXIF error in {source_file_path}: {e}")
+                            # Immediately fall back to original filename
+                            raise
+                        
+                        creationTime = jpg_sorter.getMinimumCreationTime(exifTags)
+                        if not creationTime:
+                            raise ValueError("No creation time found in EXIF")
+                        
+                        creationTime = strptime(str(creationTime), "%Y:%m:%d %H:%M:%S")
+                        creationTime = strftime("%Y%m%d_%H%M%S", creationTime)
+                        
+                        file_name = f"{creationTime}.{extension.lower()}"
+                        while os.path.exists(os.path.join(dest_directory, file_name)):
+                            index += 1
+                            file_name = f"{creationTime}({index}).{extension.lower()}"
+                            
                 except Exception as e:
-                    logger.warning(f"Error reading EXIF from {source_file_path}: {e}")
-                image.close()
-                creationTime = jpg_sorter.getMinimumCreationTime(exifTags)
-                try:
-                    creationTime = strptime(
-                        str(creationTime), "%Y:%m:%d %H:%M:%S"
-                    )
-                    creationTime = strftime("%Y%m%d_%H%M%S", creationTime)
-                    file_name = str(creationTime) + "." + extension.lower()
-                    while os.path.exists(
-                        os.path.join(dest_directory, file_name)
-                    ):
-                        index += 1
-                        file_name = (
-                            str(creationTime)
-                            + "("
-                            + str(index)
-                            + ")"
-                            + "."
-                            + extension.lower()
-                        )
-                except:
+                    logger.warning(f"Using original filename for {source_file_path} due to: {e}")
                     file_name = file
-
-
             else:
                 if extension:
                     file_name = str(cur_file_number) + "." + extension.lower()
