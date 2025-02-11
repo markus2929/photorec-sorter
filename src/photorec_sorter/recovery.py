@@ -88,30 +88,26 @@ def sort_photorec_folder(
 
             elif enable_datetime_filename:
                 index = 0
-                image = open(source_file_path, "rb")
-                exifTags = exifread.process_file(image, details=False)
-                image.close()
-                creationTime = jpg_sorter.getMinimumCreationTime(exifTags)
                 try:
-                    creationTime = strptime(
-                        str(creationTime), "%Y:%m:%d %H:%M:%S"
-                    )
-                    creationTime = strftime("%Y%m%d_%H%M%S", creationTime)
-                    file_name = str(creationTime) + "." + extension.lower()
-                    while os.path.exists(
-                        os.path.join(dest_directory, file_name)
-                    ):
-                        index += 1
-                        file_name = (
-                            str(creationTime)
-                            + "("
-                            + str(index)
-                            + ")"
-                            + "."
-                            + extension.lower()
-                        )
-                except:
-                    file_name = file
+                    image = open(source_file_path, "rb")
+                    exifTags = exifread.process_file(image, details=False)
+                    image.close()
+                    creationTime = jpg_sorter.getMinimumCreationTime(exifTags)
+                    try:
+                        creationTime = strptime(str(creationTime), "%Y:%m:%d %H:%M:%S")
+                        creationTime = strftime("%Y%m%d_%H%M%S", creationTime)
+                        file_name = str(creationTime) + "." + extension.lower()
+                        while os.path.exists(os.path.join(dest_directory, file_name)):
+                            index += 1
+                            file_name = str(creationTime) + f"({index})." + extension.lower()
+                    except:
+                        file_name = file
+                except KeyError as e:
+                    logger.warning(f"Skipping file '{source_file_path}' due to EXIF KeyError: {e}")
+                    continue
+                except Exception as e:
+                    logger.error(f"Error processing file '{source_file_path}': {e}")
+                    continue
 
             else:
                 if extension:
